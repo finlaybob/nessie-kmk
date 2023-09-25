@@ -19,7 +19,7 @@ last_position = None
 displayio.release_displays()
 
 # create the spi device and pins we will need
-spi = busio.SPI(board.GP2, MOSI=board.GP3)
+spi = busio.SPI(board.GP10, MOSI=board.GP11)
 
 
 while not spi.try_lock():
@@ -29,9 +29,9 @@ print("spi lock 👍")
 
 spi.configure(baudrate=24000000)  # Configure SPI for 24MHz
 spi.unlock()
-cs = board.GP5
-dc = board.GP6
-reset = board.GP9
+cs = board.GP16
+dc = board.GP12
+reset = None #board.GP9
 
 display_bus = displayio.FourWire(spi, command=dc, chip_select=cs, reset=reset)
 
