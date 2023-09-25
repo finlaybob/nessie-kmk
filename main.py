@@ -13,13 +13,13 @@ from vectorio import Rectangle, Circle, Polygon
 
 import rotaryio
 
-enc = rotaryio.IncrementalEncoder(board.GP13, board.GP12, 2)
+enc = rotaryio.IncrementalEncoder(board.GP6, board.GP5, 4)
 last_position = None
 
 displayio.release_displays()
 
 # create the spi device and pins we will need
-spi = busio.SPI(board.GP10, MOSI=board.GP11)
+spi = busio.SPI(board.GP10, MOSI=board.GP11, MISO=None)
 
 
 while not spi.try_lock():
@@ -31,7 +31,7 @@ spi.configure(baudrate=24000000)  # Configure SPI for 24MHz
 spi.unlock()
 cs = board.GP16
 dc = board.GP12
-reset = None #board.GP9
+reset = board.GP13
 
 display_bus = displayio.FourWire(spi, command=dc, chip_select=cs, reset=reset)
 
@@ -68,8 +68,9 @@ text_group.append(text_area)  # Subgroup for text scaling
 splash.append(text_group)
 
 v = 0.0
+speed = 0
 while True:
-    v += 0.016
+    v += (speed * 0.001)
     text_group.x =  int(0.9 *(math.cos(v) * 119) + 113)
     text_group.y = int(0.9 *(math.sin(v) * 119) + 119)
 
@@ -78,7 +79,7 @@ while True:
     position = enc.position
     if last_position == None or position != last_position:
         print(position)
+        speed = position
     last_position = position
-    #print(position)
     time.sleep(1 / 60)
     display.refresh()
